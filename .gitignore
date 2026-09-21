@@ -1,0 +1,5 @@
+# local runtime data — never commit tokens or per-user config
+config.sh
+state
+token
+.DS_Store
