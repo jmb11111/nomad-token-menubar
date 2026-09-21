@@ -52,6 +52,10 @@ copy_line() {
 config_line() {
   echo "Edit config… | bash=/usr/bin/open param1=-t param2=$CONFIG terminal=false"
 }
+setup_line() {
+  # Opens a terminal for the interactive wizard (terminal=true uses SwiftBar's terminal)
+  echo "Run setup… | bash=$DATA_DIR/setup.sh terminal=true refresh=true"
+}
 
 # True only if config.sh exists AND assigns REFRESH_CMD a non-empty value.
 configured() {
@@ -63,7 +67,7 @@ if ! configured; then
   title "setup" red
   echo "---"
   echo "Not configured | color=#888888"
-  echo "Set REFRESH_CMD in config.sh (see config.example.sh)"
+  setup_line
   config_line
   exit 0
 fi
@@ -113,3 +117,4 @@ echo "Expires:  $expires_h"
 echo "---"
 refresh_line
 config_line
+setup_line

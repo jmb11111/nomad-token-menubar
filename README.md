@@ -41,38 +41,30 @@ The installer will:
 - copy the plugin + assets into `~/.nomad-token-menubar/`,
 - point SwiftBar at the plugin (respecting an existing plugin folder if you
   already use SwiftBar),
-- create `~/.nomad-token-menubar/config.sh` for you to edit.
+- launch an **interactive setup wizard** to configure it (see below).
 
 Re-run `./install.sh` any time to update; your `config.sh` is left untouched.
 
-## Configure
+## Configure (interactive)
 
-Edit `~/.nomad-token-menubar/config.sh` and set **`REFRESH_CMD`** — a command
-that prints a fresh token to stdout on line 1 (and, optionally, its lifetime in
-seconds on line 2).
-
-**Vault Nomad secrets engine** (prints token + uses the lease as the TTL):
+The installer runs the wizard automatically. You can also run it any time from
+the menu bar (**Run setup…**) or directly:
 
 ```sh
-REFRESH_CMD='r=$(vault read -format=json nomad/creds/YOUR_ROLE); \
-  echo "$r" | jq -r .data.secret_id; \
-  echo "$r" | jq -r .lease_duration'
+~/.nomad-token-menubar/setup.sh
 ```
 
-**Nomad ACL auth method / OIDC login** (token carries its own expiry):
+It asks how you fetch a token — **Vault secrets engine**, **Nomad ACL auth
+method / OIDC**, or a **custom command** — prompts only for the values that
+choice needs, **tests the command**, writes `config.sh` for you, and offers to
+fetch the first token. No hand-editing required.
 
-```sh
-REFRESH_CMD='nomad login -method=YOUR_METHOD -json | jq -r .SecretID'
-EXPIRY=self
-NOMAD_ADDR=https://nomad.example.com
-```
+### Configure manually (optional)
 
-**Anything else** — any script that echoes a token:
-
-```sh
-REFRESH_CMD='/path/to/get-nomad-token.sh'
-EXPIRY=3600   # if the script can't tell us, state a fixed lifetime in seconds
-```
+If you'd rather edit by hand, set **`REFRESH_CMD`** in
+`~/.nomad-token-menubar/config.sh` — a command that prints a fresh token to
+stdout on line 1 (and, optionally, its lifetime in seconds on line 2). See
+`config.example.sh` for annotated examples (Vault / auth method / custom).
 
 ### How the lifetime is determined
 
@@ -91,6 +83,7 @@ Click the menu bar icon:
 - **Refresh token** — runs your `REFRESH_CMD`, updates the indicator (headless, no window).
 - **Copy token to clipboard** — copies the current token so you can paste it into a login/auth prompt.
 - **Edit config…** — opens `config.sh`.
+- **Run setup…** — re-runs the interactive wizard.
 
 The indicator refreshes every 30s; the menu bar shows whole minutes (`42m`,
 `<1m`, `exp`) and the dropdown shows the exact time and timestamps.
@@ -112,6 +105,7 @@ Then `nt` refreshes + exports, or `nt-export` loads the cached token.
 ```
 ~/.nomad-token-menubar/
 ├── config.sh            # your settings (git-ignored; never commit)
+├── setup.sh             # interactive configuration wizard
 ├── state                # "<fetched_epoch> <ttl_seconds>"  (no secret)
 ├── token                # the raw token, chmod 600
 ├── lib/refresh.sh       # fetch + record + redraw

@@ -38,17 +38,14 @@ have nomad || warn "Nomad CLI not found — only needed if you set EXPIRY=self."
 info "Installing to $DATA_DIR"
 mkdir -p "$DATA_DIR/lib" "$DATA_DIR/assets"
 cp "$SRC/lib/refresh.sh"        "$DATA_DIR/lib/refresh.sh"
+cp "$SRC/setup.sh"              "$DATA_DIR/setup.sh"
 cp "$SRC/assets/nomad-green.png" "$DATA_DIR/assets/"
 cp "$SRC/assets/nomad-red.png"   "$DATA_DIR/assets/"
 cp "$SRC/assets/nomad.svg"       "$DATA_DIR/assets/" 2>/dev/null || true
-chmod +x "$DATA_DIR/lib/refresh.sh"
+chmod +x "$DATA_DIR/lib/refresh.sh" "$DATA_DIR/setup.sh"
 
-if [[ -f "$DATA_DIR/config.sh" ]]; then
-  info "Keeping existing config.sh."
-else
-  cp "$SRC/config.example.sh" "$DATA_DIR/config.sh"
-  warn "Created $DATA_DIR/config.sh — edit it and set REFRESH_CMD before use."
-fi
+# A reference copy of the example is always available in the data dir.
+cp "$SRC/config.example.sh" "$DATA_DIR/config.example.sh"
 
 # --- SwiftBar plugin dir ------------------------------------------------------
 PLUGIN_DIR="$(defaults read com.ameba.SwiftBar PluginDirectory 2>/dev/null || true)"
@@ -68,7 +65,22 @@ open -a SwiftBar >/dev/null 2>&1 || true
 sleep 1
 open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
 
-say "Done."
-info "1. Edit your config:   \$EDITOR $DATA_DIR/config.sh   (set REFRESH_CMD)"
-info "2. Click the menu bar icon → Refresh token."
-info "Optional shell integration is in shell/nomad-token-menubar.sh (see README)."
+# --- configure ----------------------------------------------------------------
+configured() {
+  [[ -f "$DATA_DIR/config.sh" ]] && grep -Eq "^[[:space:]]*REFRESH_CMD=[\"']?[^\"'[:space:]]" "$DATA_DIR/config.sh"
+}
+
+echo
+if configured; then
+  say "Done — already configured."
+  info "Re-run setup anytime:  $DATA_DIR/setup.sh"
+elif [[ -t 0 && -t 1 ]]; then
+  say "Files installed — let's configure it."
+  echo
+  "$DATA_DIR/setup.sh"
+else
+  say "Files installed."
+  warn "Run the setup wizard to configure:  $DATA_DIR/setup.sh"
+fi
+echo
+info "Optional shell integration: shell/nomad-token-menubar.sh (see README)."
