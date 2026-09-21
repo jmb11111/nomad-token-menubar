@@ -53,13 +53,18 @@ config_line() {
   echo "Edit config… | bash=/usr/bin/open param1=-t param2=$CONFIG terminal=false"
 }
 
+# True only if config.sh exists AND assigns REFRESH_CMD a non-empty value.
+configured() {
+  [[ -f "$CONFIG" ]] && grep -Eq "^[[:space:]]*REFRESH_CMD=[\"']?[^\"'[:space:]]" "$CONFIG"
+}
+
 # --- Not configured yet -------------------------------------------------------
-if [[ ! -f "$CONFIG" ]]; then
+if ! configured; then
   title "setup" red
   echo "---"
   echo "Not configured | color=#888888"
-  echo "Create $CONFIG (see config.example.sh)"
-  refresh_line
+  echo "Set REFRESH_CMD in config.sh (see config.example.sh)"
+  config_line
   exit 0
 fi
 
