@@ -5,7 +5,7 @@ whether you have a valid token and how long it has left, with one click to
 refresh and one to copy it to your clipboard.
 
 <!-- Replace with a real screenshot once you have one -->
-> 🟢 `42m` when valid · 🔴 `exp` when expired · dropdown: exact time left, **Copy token**, **Refresh token**
+> <img src="assets/nomad-green.png" width="14" alt="valid"> `42m` when valid · <img src="assets/nomad-red.png" width="14" alt="expired"> `exp` when expired · dropdown: exact time left, **Copy token**, **Refresh token**
 
 Built on [SwiftBar](https://github.com/swiftbar/SwiftBar). It does **not** care how
 you mint tokens — you tell it the command you already use (Vault, an ACL auth
