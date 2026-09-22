@@ -1,9 +1,10 @@
 # nomad-token-menubar configuration
 #
-# Copy this file to  ~/.nomad-token-menubar/config.sh  and edit.
-# (install.sh does the copy for you if config.sh doesn't exist yet.)
+# You normally don't edit this by hand — `./install.sh` (or the menu bar's
+# "Run setup…") runs an interactive wizard that writes ~/.nomad-token-menubar/
+# config.sh for you. This file documents the format if you'd rather edit it.
 #
-# This file is sourced by a shell script, so it is plain shell syntax.
+# It is sourced by a shell script, so it is plain shell syntax.
 
 # ---------------------------------------------------------------------------
 # REFRESH_CMD (required)

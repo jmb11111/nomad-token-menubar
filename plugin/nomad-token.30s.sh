@@ -54,7 +54,7 @@ config_line() {
 }
 setup_line() {
   # Opens a terminal for the interactive wizard (terminal=true uses SwiftBar's terminal)
-  echo "Run setup… | bash=$DATA_DIR/setup.sh terminal=true refresh=true"
+  echo "Run setup… | bash=$DATA_DIR/nomad-token-menubar.sh param1=setup terminal=true refresh=true"
 }
 
 # True only if config.sh exists AND assigns REFRESH_CMD a non-empty value.

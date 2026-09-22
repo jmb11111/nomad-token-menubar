@@ -51,7 +51,7 @@ The installer runs the wizard automatically. You can also run it any time from
 the menu bar (**Run setup…**) or directly:
 
 ```sh
-~/.nomad-token-menubar/setup.sh
+~/.nomad-token-menubar/nomad-token-menubar.sh setup
 ```
 
 It asks how you fetch a token — **Vault secrets engine**, **Nomad ACL auth
@@ -104,9 +104,9 @@ Then `nt` refreshes + exports, or `nt-export` loads the cached token.
 
 ```
 ~/.nomad-token-menubar/
-├── config.sh            # your settings (git-ignored; never commit)
-├── setup.sh             # interactive configuration wizard
-├── state                # "<fetched_epoch> <ttl_seconds>"  (no secret)
+├── config.sh                  # your settings (git-ignored; never commit)
+├── nomad-token-menubar.sh     # installed copy of the installer; `… setup` re-runs the wizard
+├── state                      # "<fetched_epoch> <ttl_seconds>"  (no secret)
 ├── token                # the raw token, chmod 600
 ├── lib/refresh.sh       # fetch + record + redraw
 └── assets/              # logo PNGs
