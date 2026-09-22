@@ -45,6 +45,26 @@ The installer will:
 
 Re-run `./install.sh` any time to update; your `config.sh` is left untouched.
 
+## macOS permissions & first launch
+
+SwiftBar is a menu bar app, so macOS applies its usual guardrails. The installer
+smooths the main one for you (it removes the Gatekeeper quarantine flag), but on
+a fresh machine you may still see:
+
+- **"SwiftBar can't be opened / is from an unidentified developer."** Open
+  **System Settings → Privacy & Security** and click **Open Anyway**, then launch
+  SwiftBar again.
+- **A Plugin Folder prompt** on first launch. If asked, choose
+  `~/.swiftbar-plugins` (the installer already points SwiftBar there).
+- **"SwiftBar wants to control Terminal."** This appears the first time you use
+  **Run setup…** (it opens a terminal for the wizard). Click **Allow** — it's
+  needed only for that button, not for the indicator itself.
+- **No icon in the menu bar?** The bar may be full — widen it or quit another
+  menu bar app and SwiftBar's icon will show.
+
+To keep it running after a reboot: SwiftBar menu → **Preferences → Launch at
+Login**.
+
 ## Configure (interactive)
 
 The installer runs the wizard automatically. You can also run it any time from

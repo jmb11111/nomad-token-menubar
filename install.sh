@@ -124,7 +124,9 @@ do_install() {
 
   have brew || die "Homebrew not found. Install from https://brew.sh, then re-run. (Needs: SwiftBar, jq.)"
   if [[ -d /Applications/SwiftBar.app ]]; then info "SwiftBar already installed."
-  else info "Installing SwiftBar…"; brew install --cask swiftbar || die "brew install swiftbar failed"; fi
+  else info "Installing SwiftBar…"; brew install --cask --no-quarantine swiftbar || die "brew install swiftbar failed"; fi
+  # Strip the Gatekeeper quarantine flag so the first launch isn't blocked.
+  xattr -dr com.apple.quarantine /Applications/SwiftBar.app 2>/dev/null || true
   if have jq; then info "jq present."; else info "Installing jq…"; brew install jq || die "brew install jq failed"; fi
   have nomad || warn "Nomad CLI not found — only needed if you set EXPIRY=self."
 
@@ -137,7 +139,7 @@ do_install() {
   cp "$SRC/config.example.sh"       "$DATA_DIR/config.example.sh" 2>/dev/null || true
   chmod +x "$DATA_DIR/lib/refresh.sh" "$DATA_DIR/nomad-token-menubar.sh"
 
-  local PLUGIN_DIR
+  # PLUGIN_DIR is global (no `local`) so the macOS notes can reference it.
   PLUGIN_DIR="$(defaults read com.ameba.SwiftBar PluginDirectory 2>/dev/null || true)"
   if [[ -z "$PLUGIN_DIR" ]]; then
     PLUGIN_DIR="$HOME/.swiftbar-plugins"; mkdir -p "$PLUGIN_DIR"
@@ -149,9 +151,23 @@ do_install() {
   cp "$SRC/plugin/nomad-token.30s.sh" "$PLUGIN_DIR/nomad-token.30s.sh" || die "copy plugin failed"
   chmod +x "$PLUGIN_DIR/nomad-token.30s.sh"
 
+  info "Launching SwiftBar (approve any macOS prompt that appears)…"
   open -a SwiftBar >/dev/null 2>&1 || true
   sleep 1
   open -g "swiftbar://refreshallplugins" >/dev/null 2>&1 || true
+}
+
+# macOS gotchas worth stating plainly on a fresh machine.
+print_macos_notes() {
+  say "macOS permissions & first launch"
+  info "• SwiftBar lives in the menu bar (no Dock icon). No icon? The menu bar may be"
+  info "  full — widen it (or quit a menu bar app) and it'll appear."
+  info "• If macOS says SwiftBar is from an unidentified developer or was downloaded"
+  info "  from the internet: System Settings → Privacy & Security → 'Open Anyway'."
+  info "• If SwiftBar asks for a Plugin Folder, choose:  ${PLUGIN_DIR:-$HOME/.swiftbar-plugins}"
+  info "• The first time you click 'Run setup…', macOS may ask SwiftBar for permission"
+  info "  to control your terminal — click Allow."
+  info "• Keep it after reboot: SwiftBar menu → Preferences → enable 'Launch at Login'."
 }
 
 # ---------- main -------------------------------------------------------------
@@ -172,6 +188,8 @@ case "${1:-install}" in
       say "Files installed."
       warn "Configure with:  $DATA_DIR/nomad-token-menubar.sh setup"
     fi
+    echo
+    print_macos_notes
     echo
     info "Optional shell integration: shell/nomad-token-menubar.sh (see README)."
     ;;
